@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nucleaire Geneeskunde Centrum</title>
+    
+    <!-- Performance Optimization: Preconnect to critical domains -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://esm.sh" crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://esm.sh" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <style>
+      body { font-family: 'Inter', sans-serif; background-color: #ffffff; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+      .leaflet-container { width: 100%; height: 100%; z-index: 10; }
+      
+      /* --- Flat Base Styles --- */
+      .nm-flat {
+        background: #ffffff;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        border-radius: 2rem;
+        border: 1px solid #f1f5f9;
+      }
+      .nm-flat-sm {
+        background: #ffffff;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        border-radius: 1.5rem;
+        border: 1px solid #f1f5f9;
+      }
+      .nm-inset {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+      }
+
+      /* --- NEW: Minimal Neomorphic Button (The "Meer info" Style) --- */
+      .nm-btn-minimal {
+        /* Subtle convex gradient for a premium feel */
+        background: linear-gradient(145deg, #ffffff, #e6e6e6);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 9999px;
+        color: #64748b; /* Slate-500 */
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        
+        /* Soft, luxurious outer shadows */
+        box-shadow: 
+          6px 6px 12px #d1d9e6, 
+          -6px -6px 12px #ffffff;
+      }
+
+      .nm-btn-minimal:hover {
+        color: #2563EB; /* Blue-600 */
+        transform: translateY(-2px); /* Slight lift */
+        box-shadow: 
+          8px 8px 16px #d1d9e6, 
+          -8px -8px 16px #ffffff;
+      }
+
+      .nm-btn-minimal:active {
+        /* Minimalist Press Animation: Squish + Inner Shadow */
+        transform: translateY(0) scale(0.96);
+        background: #F3F5F7; /* Flatten gradient */
+        box-shadow: 
+          inset 4px 4px 8px #d1d9e6, 
+          inset -4px -4px 8px #ffffff;
+        border-color: transparent;
+      }
+
+      /* --- NEW: Minimal Active State (Dark) --- */
+      .nm-btn-dark {
+        background: #0F172A; /* Slate-900 */
+        color: white;
+        border: 1px solid #0F172A;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+      .nm-btn-dark:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .nm-btn-dark:active {
+        transform: scale(0.96);
+      }
+
+      /* --- NEW: Dropdown Flat --- */
+      .nm-dropdown {
+        background: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f1f5f9;
+        border-radius: 2.5rem;
+      }
+
+      /* --- NEW: Premium Hero Button (Detailed Neomorphism) --- */
+      .hero-button {
+        background: #ffffff;
+        color: #111827; /* Gray-900 */
+        border-radius: 9999px; /* Pill shape */
+        border: 1px solid #e2e8f0; 
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+          
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+        font-size: 17px;
+        height: 72px; /* Substantial touch target */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        cursor: pointer;
+        padding: 0 40px;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+      
+      .hero-button:hover {
+        transform: translateY(-3px); /* Lift effect */
+        color: #2563EB; /* Brand color on hover */
+        background: #fafafa;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      
+      .hero-button:active {
+        transform: translateY(0) scale(0.98);
+        background: #f1f5f9;
+        box-shadow: none;
+        border-color: transparent;
+      }
+
+      /* Card Hover Effect for NM elements */
+      .nm-card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .nm-card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f0f0f0; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes colorPulse {
+        0%, 100% { background-color: #6FAEF7; }
+        50% { background-color: #3B82F6; }
+      }
+      
+      .animate-fade-in-up { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      .animate-color-pulse { animation: colorPulse 3s infinite ease-in-out; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react/": "https://esm.sh/react@18.3.1/",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.395.0?deps=react@18.3.1",
+    "recharts": "https://esm.sh/recharts@2.12.7?deps=react@18.3.1",
+    "react-leaflet": "https://esm.sh/react-leaflet@4.2.1?deps=react@18.3.1,react-dom@18.3.1,leaflet@1.9.4",
+    "leaflet": "https://esm.sh/leaflet@1.9.4",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>
